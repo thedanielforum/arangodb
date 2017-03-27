@@ -1,11 +1,11 @@
-package arango
+package arangodb
 
 import (
 	"net/http"
 	"bytes"
 	"io/ioutil"
 	"fmt"
-	"github.com/thedanielforum/arango/types"
+	"github.com/thedanielforum/arangodb/types"
 	"github.com/apex/log"
 )
 

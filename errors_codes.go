@@ -1,4 +1,4 @@
-package arango
+package arangodb
 
 import "github.com/pkg/errors"
 
