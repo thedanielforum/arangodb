@@ -1,10 +1,10 @@
-package arango
+package arangodb
 
 import (
 	"fmt"
 	"encoding/json"
-	"github.com/thedanielforum/arango/types"
 	"github.com/apex/log"
+	"github.com/thedanielforum/arangodb/types"
 )
 
 type credentials struct {

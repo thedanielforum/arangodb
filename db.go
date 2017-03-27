@@ -1,8 +1,8 @@
-package arango
+package arangodb
 
 import (
 	"github.com/apex/log"
-	"github.com/thedanielforum/arango/types"
+	"github.com/thedanielforum/arangodb/types"
 	"fmt"
 	"encoding/json"
 )
