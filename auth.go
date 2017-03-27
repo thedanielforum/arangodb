@@ -39,7 +39,7 @@ func (c *Connection) authenticate(user, pass string) error {
 	c.token = fmt.Sprintf("bearer %s", auth.Jwt)
 	c.header.Set("Authorization", c.token)
 
-	if c.opts.DebugMode {
+	if c.config.DebugMode {
 		log.Infof("connected to: %s", c.host)
 	}
 

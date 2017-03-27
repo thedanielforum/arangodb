@@ -19,7 +19,7 @@ func init() {
 }
 
 // Config for the database session.
-type Opts struct {
+type Config struct {
 	Timeout           time.Duration
 	KeepAlivePeriod   time.Duration
 	// By default use JWT to authenticate.
@@ -35,7 +35,7 @@ type Connection struct {
 
 	mu     sync.Mutex
 	// Connection options
-	opts   *Opts
+	config *Config
 	// Host address
 	host   string
 	// Database
@@ -44,12 +44,12 @@ type Connection struct {
 	token  string
 }
 
-func NewConnection(host, username, password string, opts *Opts) (*Connection, error) {
+func NewConnection(host, username, password string, config *Config) (*Connection, error) {
 	var err error
 	c := new(Connection)
-	c.opts    = opts
-	c.host = buildHostAddress(host, false)
-	c.header  = http.Header{}
+	c.config = config
+	c.host   = buildHostAddress(host, false)
+	c.header = http.Header{}
 
 	// Set default headers
 	c.header.Set("Content-Type", "application/json")
@@ -57,8 +57,8 @@ func NewConnection(host, username, password string, opts *Opts) (*Connection, er
 	// Set custom timeout.
 	// See https://goo.gl/NLk64L
 	timeOut := defaultTimeOut
-	if c.opts.Timeout > 0 {
-		timeOut = c.opts.Timeout
+	if c.config.Timeout > 0 {
+		timeOut = c.config.Timeout
 	}
 
 	// Connect to server

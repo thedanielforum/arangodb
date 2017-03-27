@@ -12,7 +12,7 @@ func (c *Connection) SetDB(db string) *Connection {
 	defer c.mu.Unlock()
 
 	c.db = db
-	if c.opts.DebugMode {
+	if c.config.DebugMode {
 		log.Infof("selected db: %s", c.db)
 	}
 	return c
