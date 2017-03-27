@@ -67,7 +67,7 @@ func (c *Connection) get(endpoint string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	if c.opts.DebugMode {
+	if c.config.DebugMode {
 		debugHttpReqResp(req, resp)
 	}
 
