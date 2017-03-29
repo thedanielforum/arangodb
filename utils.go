@@ -26,3 +26,12 @@ func debugHttpReqResp(req *http.Request, resp *http.Response) {
 	}
 	log.Infof("--- RESPONSE START ---\n%s\n--- RESPONSE END ---", respDump)
 }
+
+func cacheAdd(m map[string]map[string]bool, db, col string) {
+	mm, ok := m[db]
+	if !ok {
+		mm = make(map[string]bool)
+		m[db] = mm
+	}
+	mm[col] = true
+}

@@ -41,7 +41,9 @@ func (c *Connection) post(endpoint string, body []byte) ([]byte, error) {
 	// Check response code for error messages.
 	if resp.StatusCode > 203 {
 		err = types.NewDbError(respBody).ToError()
-		log.WithError(err).Warn("error response from db api")
+		if c.config.DebugMode {
+			log.WithError(err).Warn("error response from arango api")
+		}
 		return nil, err
 	}
 
@@ -80,7 +82,45 @@ func (c *Connection) get(endpoint string) ([]byte, error) {
 	// Check response code for error messages.
 	if resp.StatusCode > 203 {
 		err = types.NewDbError(respBody).ToError()
-		log.WithError(err).Warn("error response from db api")
+		if c.config.DebugMode {
+			log.WithError(err).Warn("error response from arango api")
+		}
+		return nil, err
+	}
+
+	return respBody, nil
+}
+func (c *Connection) deleteReq (endpoint string) ([]byte, error) {
+	// Prepare Request
+	req, err := http.NewRequest(
+		"DELETE",
+		fmt.Sprintf("%s/%s", c.host, endpoint),
+		nil,
+	)
+	req.Header = c.header
+	if err != nil {
+		return nil, err
+	}
+
+	// Execute
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// UnMarshal response
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check response code for error messages.
+	if resp.StatusCode > 203 {
+		err = types.NewDbError(respBody).ToError()
+		if c.config.DebugMode {
+			log.WithError(err).Warn("error response from arango api")
+		}
 		return nil, err
 	}
 
