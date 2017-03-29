@@ -26,7 +26,8 @@ const (
 	ErrorCodeInvalidEdgeAttribute ErrorCode = "invalid edge attribute"
 
 	//Database Errors
-	ErrorCodeNoDatabaseSelected   ErrorCode = "no database selected"
-	ErrorCodeCollectionNotExist   ErrorCode = "collection is left blank"
-	ErrorInternalServer           ErrorCode = "Fatal Error"
+	ErrorCodeNoDatabaseSelected   ErrorCode = "DBS400101"
+
+	//Collection Errors
+	ErrorCodeCollectionNotExist   ErrorCode = "COL400101"
 )

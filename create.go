@@ -15,11 +15,9 @@ type EdgeProp struct {
 
 func (c *Connection) Create(collectionName string, doc interface{}) error {
 
-	checkType := c.validateCollection(collectionName, doc)
+	c.cacheValidation(collectionName, doc)
+	//checkType := c.validateCollection(collectionName, doc)
 
-	if checkType != TypeDoc && checkType != TypeEdge {
-		println(checkType,"Fatal Error")
-	}
 	//Collection Confirm Exist Now , Proceed to perform save document/edge
 	urlStack := fmt.Sprintf("/_db/%s/_api/document/%s",c.db,collectionName)
 	encoded,err := json.Marshal(doc)
@@ -28,7 +26,7 @@ func (c *Connection) Create(collectionName string, doc interface{}) error {
 	}
 	_, err = c.post(urlStack,encoded)
 	if err != nil {
-		if checkType == TypeEdge {
+		if err.Error() == errc.ErrorCodeInvalidEdgeAttribute.String() {
 			log.WithError(err).Info(errc.ErrorCodeInvalidEdgeAttribute.Msg())
 			return err
 		}
@@ -38,59 +36,42 @@ func (c *Connection) Create(collectionName string, doc interface{}) error {
 	return nil
 }
 
-//CHECK CONNECTION EXIST AND TYPE
-func (c *Connection) validateCollection(collectionName string, doc interface{}) int {
-	urlStack := fmt.Sprintf("/_db/%s/_api/collection/%s",c.db,collectionName)
-
-	checkEdge := new(EdgeProp)
-	encodedDoc, _ := json.Marshal(doc)
-
-	json.Unmarshal(encodedDoc, checkEdge)
-
-	colProp, err := c.get(urlStack)
-	if err != nil {
-		//Create Collection if Not Exist
-		if checkEdge.To != "" && checkEdge.From != "" {
-			c.CreateColEdge(collectionName)
-			return TypeEdge
-		}
-		c.CreateColDoc(collectionName)
-		return TypeDoc
-	}
-	sorter := new(types.CollectionInfo)
-	json.Unmarshal(colProp, sorter)
-	return sorter.Type
-}
-
+//check internal cache if such collection exist before attempting to create new collection
 func (c *Connection) cacheValidation(collectionName string, doc interface{}) error{
 	//true means that collection exist
 	if c.colCache[c.db][collectionName] {
 		return nil
 	}
-	return errc.ErrorCodeCollectionNotExist
+	//if collection don't exist, create one
+	checkEdge := new(EdgeProp)
+	encodedDoc, _ := json.Marshal(doc)
+	json.Unmarshal(encodedDoc, checkEdge)
+
+	if checkEdge.To != "" && checkEdge.From != "" {
+		c.CreateColEdge(collectionName)
+		cacheAdd(c.colCache, c.db, collectionName)
+		return nil
+	}
+	c.CreateColDoc(collectionName)
+	cacheAdd(c.colCache, c.db, collectionName)
+	return nil
 }
 
 func (c *Connection) GetAllColProp() {
 	urlStack := fmt.Sprintf("/_db/%s/_api/collection",c.db)
+
+	//err means that database do not exist
 	allProp, err := c.get(urlStack)
 	if err != nil {
-		//db does not exist
 		log.WithError(err).Info(errc.ErrorCodeNoDatabaseSelected.Msg())
 	}
-	sorter := new(types.ColInfo)
-	json.Unmarshal(allProp, sorter)
+	colsInfo := new(types.ColInfo)
+	json.Unmarshal(allProp, colsInfo)
 
-	for _, fish := range sorter.Result{
-		if fish.IsSystem == false {
-			//println(fish.Name)
-			cacheAdd(c.colCache, c.db, fish.Name)
+	for _, colInfo := range colsInfo.Result{
+		if colInfo.IsSystem == false {
+			cacheAdd(c.colCache, c.db, colInfo.Name)
 		}
 	}
 	return
-}
-
-func (c *Connection) stubFunc() {
-	println(c.colCache[c.db]["DemoTest0"])
-	//fmt.Printf("%v\n", c.colCache)
-	//fmt.Printf("%v\n", c.colCache["yello"]["DemoTest01"])
 }
