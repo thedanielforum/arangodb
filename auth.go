@@ -37,6 +37,7 @@ func (c *Connection) authenticate(user, pass string) error {
 		return err
 	}
 	c.token = fmt.Sprintf("bearer %s", auth.Jwt)
+	//println(c.token)
 	c.header.Set("Authorization", c.token)
 
 	if c.config.DebugMode {

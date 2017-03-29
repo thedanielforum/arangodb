@@ -1,6 +1,5 @@
 package arangodb
 
-// strings are pointers to allow null values
 type Document struct {
 	Id   string `json:"_id,omitempty"`
 	Key  string `json:"_key,omitempty"`

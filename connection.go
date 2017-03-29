@@ -9,9 +9,7 @@ import (
 	"sync"
 )
 
-const(
-	defaultTimeOut = time.Second * 10
-)
+const defaultTimeOut = time.Second * 10
 
 func init() {
 	// Set up APEX log handler
@@ -27,21 +25,25 @@ type Config struct {
 	UseHttpBasicAuth  bool
 	// Log all http requests to db.
 	DebugMode         bool
+	// Automatically create edge/collection on insert if non existing
+	AutoCreateColOnInsert bool
 }
 
 type Connection struct {
-	client *http.Client
-	header http.Header
+	client   *http.Client
+	header   http.Header
 
-	mu     sync.Mutex
+	mu       sync.Mutex
 	// Connection options
-	config *Config
+	config   *Config
 	// Host address
-	host   string
+	host     string
 	// Database
-	db     string
+	db       string
 	// Authentication token
-	token  string
+	token    string
+	// Collection cache
+	colCache map[string]map[string]bool
 }
 
 func NewConnection(host, username, password string, config *Config) (*Connection, error) {
@@ -50,7 +52,7 @@ func NewConnection(host, username, password string, config *Config) (*Connection
 	c.config = config
 	c.host   = buildHostAddress(host, false)
 	c.header = http.Header{}
-
+	c.colCache = make(map[string]map[string]bool)
 	// Set default headers
 	c.header.Set("Content-Type", "application/json")
 
