@@ -9,8 +9,8 @@ import (
 //type 2 = document collection
 //type 3 = edge collection
 const (
-	TypeDoc = 2
-	TypeEdge = 3
+	TypeDoc = iota + 2
+	TypeEdge
 )
 
 //name = collection of name
@@ -25,44 +25,43 @@ type CollectionProp struct {
 	Keys        map[string]interface{} `json:"keyOptions,omitempty"`
 }
 
-func (c *Connection) CreateColDoc(collections ...string) error {
-	//any other number in typeCollection apart from 2&3 will lead to 2 by default
-	for _, collection := range collections {
+func (c *Connection) NewCollection(cols ...string) {
+	for _, col := range cols {
 		preFab, err := json.Marshal(&CollectionProp{
-			Name: collection,
+			Name: col,
 			Type: TypeDoc,
 		})
 		if err != nil {
 			return err
 		}
 
-		endPoint := fmt.Sprintf("/_db/%s/_api/collection",c.db)
-		_, err = c.post(endPoint,preFab)
+		endPoint := fmt.Sprintf("/_db/%s/_api/collection", c.db)
+		_, err = c.post(endPoint, preFab)
 		if err != nil {
-			log.WithError(err).Info(collection + " Document Collection Already Exist")
+			log.Infof("Document collection already exist: %s", col)
+		} else {
+			log.Infof("Created document collection: %s", col)
 		}
-
 	}
-	return nil
 }
 
-func (c *Connection) CreateColEdge(collections ...string) error {
-	//any other number in typeCollection apart from 2&3 will lead to 2 by default
-	for _, collection := range collections {
+func (c *Connection) NewEdge(edges ...string) {
+	for _, edge := range edges {
 		preFab, err := json.Marshal(&CollectionProp{
-			Name: collection,
+			Name: edge,
 			Type: TypeEdge,
 		})
 		if err != nil {
 			return err
 		}
 
-		endPoint := fmt.Sprintf("/_db/%s/_api/collection",c.db)
-		_, err = c.post(endPoint,preFab)
+		endPoint := fmt.Sprintf("/_db/%s/_api/collection", c.db)
+		_, err = c.post(endPoint, preFab)
 		if err != nil {
-			log.WithError(err).Info(collection + " Edge Collection Already Exist")
+			log.Infof("Edge collection already exist: %s", edge)
+		} else {
+			log.Infof("Created edge collection: %s", edge)
 		}
 
 	}
-	return nil
 }

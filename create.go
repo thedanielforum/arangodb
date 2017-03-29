@@ -13,18 +13,16 @@ type EdgeProp struct {
 	To        string    `json:"_to"`
 }
 
-func (c *Connection) Create(collectionName string, doc interface{}) error {
+func (c *Connection) Create(col string, doc interface{}) error {
+	c.cacheValidation(col, doc)
 
-	c.cacheValidation(collectionName, doc)
-	//checkType := c.validateCollection(collectionName, doc)
-
-	//Collection Confirm Exist Now , Proceed to perform save document/edge
-	urlStack := fmt.Sprintf("/_db/%s/_api/document/%s",c.db,collectionName)
+	// Collection Confirm Exist Now , Proceed to perform save document/edge
+	url := fmt.Sprintf("/_db/%s/_api/document/%s", c.db, col)
 	encoded,err := json.Marshal(doc)
 	if err != nil {
 		return err
 	}
-	_, err = c.post(urlStack,encoded)
+	_, err = c.post(url, encoded)
 	if err != nil {
 		if err.Error() == errc.ErrorCodeInvalidEdgeAttribute.String() {
 			log.WithError(err).Info(errc.ErrorCodeInvalidEdgeAttribute.Msg())
@@ -36,23 +34,23 @@ func (c *Connection) Create(collectionName string, doc interface{}) error {
 	return nil
 }
 
-//check internal cache if such collection exist before attempting to create new collection
-func (c *Connection) cacheValidation(collectionName string, doc interface{}) error{
-	//true means that collection exist
+// cacheValidation checks internal cache if such collection exist before attempting to create new collection
+func (c *Connection) cacheValidation(collectionName string, doc interface{}) error {
+	// true means that collection exist
 	if c.colCache[c.db][collectionName] {
 		return nil
 	}
-	//if collection don't exist, create one
+	// if collection don't exist, create one
 	checkEdge := new(EdgeProp)
 	encodedDoc, _ := json.Marshal(doc)
 	json.Unmarshal(encodedDoc, checkEdge)
 
 	if checkEdge.To != "" && checkEdge.From != "" {
-		c.CreateColEdge(collectionName)
+		c.NewEdge(collectionName)
 		cacheAdd(c.colCache, c.db, collectionName)
 		return nil
 	}
-	c.CreateColDoc(collectionName)
+	c.NewCollection(collectionName)
 	cacheAdd(c.colCache, c.db, collectionName)
 	return nil
 }
