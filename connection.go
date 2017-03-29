@@ -25,6 +25,8 @@ type Config struct {
 	UseHttpBasicAuth  bool
 	// Log all http requests to db.
 	DebugMode         bool
+	// Automatically create edge/collection on insert if non existing
+	AutoCreateColOnInsert bool
 }
 
 type Connection struct {

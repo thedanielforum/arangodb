@@ -2,11 +2,11 @@ package types
 
 type DbInfo struct {
 	Result struct {
-		       Name     string `json:"name"`
-		       ID       string `json:"id"`
-		       Path     string `json:"path"`
-		       IsSystem bool   `json:"isSystem"`
-	       }   `json:"result"`
+		Name     string `json:"name"`
+		ID       string `json:"id"`
+		Path     string `json:"path"`
+		IsSystem bool   `json:"isSystem"`
+	}          `json:"result"`
 	Error bool `json:"error"`
 	Code  int  `json:"code"`
 }
@@ -34,6 +34,6 @@ type CollectionInfo struct {
 //Get properties of all collections
 type ColInfo struct {
 	Result []CollectionInfo `json:"result"`
-	Error bool `json:"error"`
-	Code  int  `json:"code"`
+	Error  bool             `json:"error"`
+	Code   int              `json:"code"`
 }

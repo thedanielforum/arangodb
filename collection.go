@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/apex/log"
+	"github.com/thedanielforum/arangodb/errc"
+	"github.com/thedanielforum/arangodb/types"
 )
 
 //type 2 = document collection
@@ -32,7 +34,7 @@ func (c *Connection) NewCollection(cols ...string) {
 			Type: TypeDoc,
 		})
 		if err != nil {
-			return err
+			log.WithError(err).Error("encoding error")
 		}
 
 		endPoint := fmt.Sprintf("/_db/%s/_api/collection", c.db)
@@ -52,7 +54,7 @@ func (c *Connection) NewEdge(edges ...string) {
 			Type: TypeEdge,
 		})
 		if err != nil {
-			return err
+			log.WithError(err).Error("encoding error")
 		}
 
 		endPoint := fmt.Sprintf("/_db/%s/_api/collection", c.db)
@@ -64,4 +66,28 @@ func (c *Connection) NewEdge(edges ...string) {
 		}
 
 	}
+}
+
+func (c *Connection) GetAllCollections() error {
+	url := fmt.Sprintf("/_db/%s/_api/collection", c.db)
+
+	// err means that database do not exist
+	resp, err := c.get(url)
+	if err != nil {
+		log.WithError(err).Info(errc.ErrorCodeNoDatabaseSelected.Msg())
+		return errc.ErrorCodeNoDatabaseSelected.Error()
+	}
+	cols := new(types.ColInfo)
+	err = json.Unmarshal(resp, cols)
+	if err != nil {
+		return err
+	}
+
+	for _, col := range cols.Result {
+		if col.IsSystem == false {
+			cacheAdd(c.colCache, c.db, col.Name)
+		}
+	}
+
+	return nil
 }
