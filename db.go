@@ -5,6 +5,7 @@ import (
 	"github.com/thedanielforum/arangodb/types"
 	"fmt"
 	"encoding/json"
+	"github.com/thedanielforum/arangodb/errc"
 )
 
 func (c *Connection) SetDB(db string) *Connection {
@@ -15,6 +16,7 @@ func (c *Connection) SetDB(db string) *Connection {
 	if c.config.DebugMode {
 		log.Infof("selected db: %s", c.db)
 	}
+
 	return c
 }
 
@@ -23,7 +25,7 @@ func (c *Connection) DBInfo() (*types.DbInfo, error) {
 	info := new(types.DbInfo)
 
 	if c.db == "" {
-		return info, ErrorCodeNoDatabaseSelected.Error()
+		return info, errc.ErrorCodeNoDatabaseSelected.Error()
 	}
 
 	body, err := c.get(fmt.Sprintf("_db/%s/_api/database/current", c.db))
@@ -43,7 +45,7 @@ func (c *Connection) ListDBs() (*types.Dbs, error) {
 	dbs := new(types.Dbs)
 
 	if c.db == "" {
-		return dbs, ErrorCodeNoDatabaseSelected.Error()
+		return dbs, errc.ErrorCodeNoDatabaseSelected.Error()
 	}
 
 	body, err := c.get("_api/database")
