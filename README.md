@@ -30,3 +30,20 @@ func main()  {
 }
 ```
 
+Get one document
+```go
+var vid *Videos
+err = connection.NewQuery(`FOR x IN %s RETURN x`, "videos").One(&vid)
+if err != nil {
+	panic(err)
+}
+```
+
+Get all documents from query
+```go
+var vids []Video
+err = connection.NewQuery(`FOR x IN %s RETURN x`, "videos").All(&vids)
+if err != nil {
+	panic(err)
+}
+```

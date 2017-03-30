@@ -21,13 +21,15 @@ func (e ErrorCode) Msg() string {
 }
 
 const (
+	// General errors
+	ErrorCodeNoResult             ErrorCode = "ERR400101"
 
-	//String Checks
+	// String Checks
 	ErrorCodeInvalidEdgeAttribute ErrorCode = "invalid edge attribute"
 
-	//Database Errors
+	// Database Errors
 	ErrorCodeNoDatabaseSelected   ErrorCode = "DBS400101"
 
-	//Collection Errors
+	// Collection Errors
 	ErrorCodeCollectionNotExist   ErrorCode = "COL400101"
 )
