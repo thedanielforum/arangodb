@@ -10,7 +10,7 @@ func (c *Connection) Delete(collectionName string ,docHandle string) error {
 
 	endPoint := fmt.Sprintf("/_db/%s/_api/document/%s/%s", c.db, collectionName,docHandle)
 
-	_,err := c.deleteReq(endPoint)
+	_,err := c.del(endPoint, nil)
 	if err != nil {
 		//log.WithError(err).Info(arangodb.ErrorCodeInvalidEdgeAttribute.Error().Error())
 		//return arangodb.ErrorCodeDocNotExist.Error()
