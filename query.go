@@ -46,6 +46,25 @@ func (q *Query) BatchSize(size int) *Query {
 	return q
 }
 
+// Run a query without any return data
+func (q *Query) Run() (err error) {
+	aql, err := json.Marshal(&types.Query{
+		Aql:       q.aql,
+		Count:     true,
+		BatchSize: q.batchSize,
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = q.conn.post(fmt.Sprintf("/_db/%s/_api/cursor", q.conn.db), aql)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (q *Query) One(result interface{}) (err error) {
 	aql, err := json.Marshal(&types.Query{
 		Aql:       q.aql,
