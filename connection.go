@@ -21,7 +21,7 @@ type Config struct {
 	Timeout           time.Duration
 	KeepAlivePeriod   time.Duration
 	// By default use JWT to authenticate.
-	// TODO create basic auth function lol c:
+	// TODO create basic auth function
 	UseHttpBasicAuth  bool
 	// Log all http requests to db.
 	DebugMode         bool

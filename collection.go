@@ -71,7 +71,7 @@ func (c *Connection) NewEdge(edges ...string) {
 }
 
 func (c *Connection) GetAllCollections() error {
-	url := fmt.Sprintf("/_db/%s/_api/collection", c.db)
+	url := fmt.Sprintf("_db/%s/_api/collection", c.db)
 
 	// err means that database do not exist
 	resp, err := c.get(url)
