@@ -16,7 +16,7 @@ func (c *Connection) Create(col string, doc interface{}) (*Document, error) {
 	}
 
 	// Collection Confirm Exist Now , Proceed to perform save document/edge
-	url := fmt.Sprintf("/_db/%s/_api/document/%s", c.db, col)
+	url := fmt.Sprintf("_db/%s/_api/document/%s", c.db, col)
 	encoded,err := json.Marshal(doc)
 	if err != nil {
 		return responseDoc, err
@@ -36,7 +36,9 @@ func (c *Connection) Create(col string, doc interface{}) (*Document, error) {
 	if err != nil {
 		return responseDoc, err
 	}
-
+	if c.config.DebugMode {
+		log.Infof("Created document in: %s", col)
+	}
 	return responseDoc, nil
 }
 

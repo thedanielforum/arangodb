@@ -36,13 +36,14 @@ func (c *Connection) NewCollection(cols ...string) {
 		if err != nil {
 			log.WithError(err).Error("encoding error")
 		}
-
-		endPoint := fmt.Sprintf("/_db/%s/_api/collection", c.db)
+		endPoint := fmt.Sprintf("_db/%s/_api/collection", c.db)
 		_, err = c.post(endPoint, preFab)
 		if err != nil {
 			log.Infof("Document collection already exist: %s", col)
 		} else {
-			log.Infof("Created document collection: %s", col)
+			if c.config.DebugMode {
+				log.Infof("Created document collection: %s", col)
+			}
 		}
 	}
 }
@@ -57,14 +58,15 @@ func (c *Connection) NewEdge(edges ...string) {
 			log.WithError(err).Error("encoding error")
 		}
 
-		endPoint := fmt.Sprintf("/_db/%s/_api/collection", c.db)
+		endPoint := fmt.Sprintf("_db/%s/_api/collection", c.db)
 		_, err = c.post(endPoint, preFab)
 		if err != nil {
 			log.Infof("Edge collection already exist: %s", edge)
 		} else {
-			log.Infof("Created edge collection: %s", edge)
+			if c.config.DebugMode {
+				log.Infof("Created edge collection: %s", edge)
+			}
 		}
-
 	}
 }
 
@@ -88,6 +90,5 @@ func (c *Connection) GetAllCollections() error {
 			cacheAdd(c.colCache, c.db, col.Name)
 		}
 	}
-
 	return nil
 }

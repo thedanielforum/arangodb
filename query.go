@@ -24,7 +24,6 @@ func (c *Connection) NewQuery(aql string, params ...interface{}) *Query {
 	aql = fmt.Sprintf(aql, params...)
 	// Replace by single quotes so there is no conflict when serialised in JSON
 	aql = strings.Replace(aql, `"`, "'", -1)
-
 	// TODO Batch size default
 	return &Query{
 		aql:       aql,
@@ -57,11 +56,10 @@ func (q *Query) Run() (err error) {
 		return err
 	}
 
-	_, err = q.conn.post(fmt.Sprintf("/_db/%s/_api/cursor", q.conn.db), aql)
+	_, err = q.conn.post(fmt.Sprintf("_db/%s/_api/cursor", q.conn.db), aql)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -75,7 +73,7 @@ func (q *Query) One(result interface{}) (err error) {
 		return err
 	}
 
-	resp, err := q.conn.post(fmt.Sprintf("/_db/%s/_api/cursor", q.conn.db), aql)
+	resp, err := q.conn.post(fmt.Sprintf("_db/%s/_api/cursor", q.conn.db), aql)
 	if err != nil {
 		return err
 	}
@@ -101,7 +99,6 @@ func (q *Query) One(result interface{}) (err error) {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -115,7 +112,7 @@ func (q *Query) All(result interface{}) (err error) {
 		return err
 	}
 
-	resp, err := q.conn.post(fmt.Sprintf("/_db/%s/_api/cursor", q.conn.db), aql)
+	resp, err := q.conn.post(fmt.Sprintf("_db/%s/_api/cursor", q.conn.db), aql)
 	if err != nil {
 		return err
 	}
